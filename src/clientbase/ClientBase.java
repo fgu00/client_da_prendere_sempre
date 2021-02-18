@@ -7,6 +7,7 @@ package clientbase;
 
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,25 +23,28 @@ public class ClientBase {
     public static void main(String[] args) {
         System.out.println("Apertua connessione");
         try {
-            while (true) {
+            Socket server = new Socket("127.0.0.1", 5500);
 
-                Socket server = new Socket("127.0.0.1", 6666);
-                InputStream dalServer = server.getInputStream();
-                BufferedReader lettore = new BufferedReader(
-                        new InputStreamReader(dalServer));
-
-                String risposta = lettore.readLine();
+            PrintWriter out
+                    = new PrintWriter(server.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(server.getInputStream()));
+            Scanner tastiera = new Scanner(System.in);
+            String s = "";
+            while (!s.equals("exit")) {
+                System.out.println("Inserire frase da inviare al server:");
+                s = tastiera.nextLine();
+                System.out.println("frase inserita: " + s);
+                out.println(s);
+                String risposta = in.readLine();
                 System.out.println("risposta del server: " + risposta);
-
-                lettore.close();
-                server.close();
-                System.out.println("chiusura connessione");
-                Thread.sleep(5000);
             }
+
+            in.close();
+            server.close();
+            System.out.println("chiusura connessione");
         } catch (IOException ex) {
             Logger.getLogger(ClientBase.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException e) {
-
         }
     }
 
